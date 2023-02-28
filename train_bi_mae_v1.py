@@ -13,7 +13,7 @@ import torch.nn.functional as F
 
 # ==================== dataset_division ====================
 
-def dataset_division(dataset_list, train_ratio, val_ratio, test_ratio):
+def dataset_division(dataset_list, val_ratio, test_ratio):
     """
     Divide the dataset into training, validation, and testing sets.
     :param dataset_list: list of dataset
@@ -26,11 +26,10 @@ def dataset_division(dataset_list, train_ratio, val_ratio, test_ratio):
     np.random.shuffle(selected_list)
     selected_list = list(selected_list)
     len_dataset = len(selected_list)
-    selected_list = selected_list[:int(len_dataset * train_ratio)]
 
-    val_list = selected_list[:int(len(selected_list)*val_ratio)]
+    val_list = selected_list[:int(len_dataset*val_ratio)]
     val_list.sort()
-    test_list = selected_list[-int(len(selected_list)*test_ratio):]
+    test_list = selected_list[-int(len_dataset*test_ratio):]
     test_list.sort()
     train_list = list(set(selected_list) - set(val_list) - set(test_list))
     train_list.sort()
@@ -75,7 +74,6 @@ train_dict["folder_MR"] = "./data/MR/"
 train_dict["folder_PET"] = "./data/PET/"
 train_dict["val_ratio"] = 0.3
 train_dict["test_ratio"] = 0.2
-train_dict["train_ratio"] = 1 - train_dict["val_ratio"] - train_dict["test_ratio"]
 
 train_dict["opt_lr"] = 1e-3 # default
 train_dict["opt_betas"] = (0.9, 0.999) # default
@@ -125,14 +123,12 @@ PET_list = glob.glob(train_dict["folder_PET"]+"*.nii.gz")
 
 MR_train_list, MR_val_list, MR_test_list = dataset_division(
     MR_list, 
-    train_dict["train_ratio"], 
     train_dict["val_ratio"], 
     train_dict["test_ratio"],
 )
 
 PET_train_list, PET_val_list, PET_test_list = dataset_division(
     PET_list, 
-    train_dict["train_ratio"], 
     train_dict["val_ratio"], 
     train_dict["test_ratio"],
 )
@@ -162,7 +158,8 @@ for idx_epoch_new in range(train_dict["epochs"]):
     for package in [package_train, package_val]:
 
         MR_list, PET_list = package[0]
-        file_list = MR_list + PET_list
+        PET_factor = int(len(MR_list) / len(PET_list))
+        file_list = MR_list + PET_list*PET_factor*2
         np.random.shuffle(file_list)
         isTrain = package[1]
         isVal = package[2]
