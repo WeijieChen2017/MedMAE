@@ -57,7 +57,7 @@ class MaskedAutoencoderViT(nn.Module):
         self.pos_embed = nn.Parameter(torch.zeros(1, self.num_patches + 1, embed_dim), requires_grad=False)  # fixed sin-cos embedding
 
         self.blocks = nn.ModuleList([
-            Block(embed_dim, num_heads, mlp_ratio, qkv_bias=True, qk_scale=None, norm_layer=norm_layer)
+            Block(embed_dim, num_heads, mlp_ratio, qkv_bias=True, norm_layer=norm_layer) # qk_scale=None,
             for i in range(depth)])
         self.norm = norm_layer(embed_dim)
         # --------------------------------------------------------------------------
@@ -91,7 +91,7 @@ class MaskedAutoencoderViT(nn.Module):
         decoder.mask_token = nn.Parameter(torch.zeros(1, 1, self.decoder_embed_dim))
         decoder.decoder_pos_embed = nn.Parameter(torch.zeros(1, self.num_patches + 1, self.decoder_embed_dim), requires_grad=False)  # fixed sin-cos embedding
         decoder.decoder_blocks = nn.ModuleList([
-            Block(self.decoder_embed_dim, self.decoder_num_heads, self.mlp_ratio, qkv_bias=True, qk_scale=None, norm_layer=self.norm_layer)
+            Block(self.decoder_embed_dim, self.decoder_num_heads, self.mlp_ratio, qkv_bias=True, norm_layer=self.norm_layer) #  qk_scale=None,
             for i in range(self.decoder_depth)])
         decoder.decoder_norm = self.norm_layer(self.decoder_embed_dim)
         decoder.decoder_pred = nn.Linear(self.decoder_embed_dim, self.patch_size**2 * self.in_chans, bias=True) # decoder to patch
