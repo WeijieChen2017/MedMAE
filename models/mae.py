@@ -224,7 +224,7 @@ class MaskedAutoencoderViT(nn.Module):
 
     def forward_decoder(self, x, modality, ids_restore):
         # embed tokens
-        decoder = self.modality_club[modality]
+        decoder = self.decoder_club[modality]
         x = decoder.decoder_embed(x)
 
         # append mask tokens to sequence
