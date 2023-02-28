@@ -40,7 +40,7 @@ def dataset_division(dataset_list, train_ratio, val_ratio, test_ratio):
 # ==================== model select ====================
 
 model_list = [
-    ["MR_PET_mae", [6],],
+    ["MR_PET_mae", [3]],
 ]
 
 print("Model index: ", end="")
@@ -61,7 +61,7 @@ train_dict["optimizer"] = "AdamW"
 
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["seed"] = 426
-train_dict["input_size"] = [256, 256]
+train_dict["input_size"] = [224, 224]
 train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["PET_norm_factor"] = 4000
