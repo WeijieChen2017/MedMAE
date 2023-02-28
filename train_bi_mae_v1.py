@@ -1,4 +1,6 @@
 from models import mae_vit_base_patch16
+from models import mae_vit_large_patch16
+from models import mae_vit_huge_patch14
 from utils import dataset_division
 
 import os
@@ -64,7 +66,7 @@ train_dict["input_size"] = [224, 224]
 train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["PET_norm_factor"] = 4000
-train_dict["target_model"] = "./pre_train/mae_pretrain_vit_base.pth"
+train_dict["target_model"] = "./pre_train/mae_vit_large_patch16.pth"
 
 train_dict["model_term"] = "two-branch mae"
 train_dict["continue_training_epoch"] = 0
@@ -97,7 +99,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # ==================== model ====================
 
-model = mae_vit_base_patch16()
+model = mae_vit_large_patch16()
 pre_train_dir = train_dict["target_model"]
 ckpt = torch.load(pre_train_dir, map_location='cpu')["model"]
 model.load_state_dict(ckpt, strict=False)
