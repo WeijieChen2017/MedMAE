@@ -193,7 +193,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
 
             if curr_modality == "PET":
                 x_data = x_data / train_dict["PET_norm_factor"]
-                x_data = np.resize(x_data, (x_data.shape[0]//2, x_data.shape[1]//2))
+            x_data = np.resize(x_data, (224, 224, x_data.shape[2]))
 
             batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
 
