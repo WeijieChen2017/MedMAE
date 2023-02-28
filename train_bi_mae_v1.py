@@ -14,7 +14,7 @@ import torch.nn.functional as F
 # ==================== model select ====================
 
 model_list = [
-    ["MR_PET_mae", [7],],
+    ["MR_PET_mae", [6],],
 ]
 
 print("Model index: ", end="")
@@ -37,7 +37,7 @@ train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["seed"] = 426
 train_dict["input_size"] = [256, 256]
 train_dict["epochs"] = 200
-train_dict["batch"] = 16
+train_dict["batch"] = 32
 train_dict["PET_norm_factor"] = 4000
 train_dict["target_model"] = "./pre_train/mae_pretrain_vit_base.pth"
 
@@ -165,6 +165,10 @@ for idx_epoch_new in range(train_dict["epochs"]):
             x_file = nib.load(x_path)
             x_data = x_file.get_fdata()
 
+            if curr_modality == "PET":
+                x_data = x_data / train_dict["PET_norm_factor"]
+                x_data = np.resize(x_data, (x_data.shape[0]//2, x_data.shape[1]//2))
+
             batch_x = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1]))
 
             for idx_batch in range(train_dict["batch"]):
@@ -176,8 +180,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                                  d1_offset:d1_offset+train_dict["input_size"][1],
                                  ]
                 
-                if curr_modality == "PET":
-                    x_slice = x_slice / train_dict["PET_norm_factor"]
+                
 
                 batch_x[idx_batch, 0, :, :, :] = x_slice
                 batch_y = copy.deepcopy(batch_x)
