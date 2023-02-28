@@ -225,24 +225,24 @@ class MaskedAutoencoderViT(nn.Module):
     def forward_decoder(self, x, modality, ids_restore):
         # embed tokens
         decoder = self.modality_club[modality]
-        x = decoder["decoder_embed"](x)
+        x = decoder.decoder_embed(x)
 
         # append mask tokens to sequence
-        mask_tokens = decoder["mask_token"].repeat(x.shape[0], ids_restore.shape[1] + 1 - x.shape[1], 1)
+        mask_tokens = decoder.mask_token.repeat(x.shape[0], ids_restore.shape[1] + 1 - x.shape[1], 1)
         x_ = torch.cat([x[:, 1:, :], mask_tokens], dim=1)  # no cls token
         x_ = torch.gather(x_, dim=1, index=ids_restore.unsqueeze(-1).repeat(1, 1, x.shape[2]))  # unshuffle
         x = torch.cat([x[:, :1, :], x_], dim=1)  # append cls token
 
         # add pos embed
-        x = x + decoder["decoder_pos_embed"]
+        x = x + decoder.decoder_pos_embed
 
         # apply Transformer blocks
-        for blk in decoder["decoder_blocks"]:
+        for blk in decoder.decoder_blocks:
             x = blk(x)
-        x = decoder["decoder_norm"](x)
+        x = decoder.decoder_norm(x)
 
         # predictor projection
-        x = decoder["decoder_pred"](x)
+        x = decoder.decoder_pred(x)
 
         # remove cls token
         x = x[:, 1:, :]
