@@ -195,20 +195,14 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 x_data = x_data / train_dict["PET_norm_factor"]
                 x_data = np.resize(x_data, (x_data.shape[0]//2, x_data.shape[1]//2))
 
-            batch_x = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1]))
+            batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
 
             for idx_batch in range(train_dict["batch"]):
                 
-                d0_offset = np.random.randint(x_data.shape[0] - train_dict["input_size"][0])
-                d1_offset = np.random.randint(x_data.shape[1] - train_dict["input_size"][1])
-
-                x_slice = x_data[d0_offset:d0_offset+train_dict["input_size"][0],
-                                 d1_offset:d1_offset+train_dict["input_size"][1],
-                                 ]
-                
-                
-
-                batch_x[idx_batch, 0, :, :, :] = x_slice
+                z_offset = np.random.randint(x_data.shape[0]-2)
+                batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset]
+                batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset+1]
+                batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+2]
                 batch_y = copy.deepcopy(batch_x)
 
             batch_x = torch.from_numpy(batch_x).float().to(device)
