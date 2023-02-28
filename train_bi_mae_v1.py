@@ -199,7 +199,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
 
             for idx_batch in range(train_dict["batch"]):
                 
-                z_offset = np.random.randint(x_data.shape[0]-2)
+                z_offset = np.random.randint(x_data.shape[2]-2)
                 batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset]
                 batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset+1]
                 batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+2]
