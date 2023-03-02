@@ -65,7 +65,7 @@ train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["seed"] = 426
 train_dict["input_size"] = [256, 256]
 train_dict["epochs"] = 200
-train_dict["batch"] = 32
+train_dict["batch"] = 64
 train_dict["PET_norm_factor"] = 4000
 train_dict["target_model"] = "./pre_train/mae_pretrain_vit_large.pth"
 train_dict["modality_club"] = ["MR_brain_norm", "CT_brain_norm", "NAC_wb_norm", "CT_wb_norm"]
@@ -116,8 +116,6 @@ model.load_state_dict(ckpt, strict=False)
 #         if ckpt[key].shape != model.state_dict()[key].shape:
 #             print(key, ckpt[key].shape, model.state_dict()[key].shape)
 #             # pos_embed torch.Size([1, 197, 1024]) torch.Size([1, 257, 1024])
-
-
 
 model.train()
 model = model.to(device)
