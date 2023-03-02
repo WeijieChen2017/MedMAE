@@ -74,12 +74,7 @@ train_dict["model_term"] = "two-branch mae"
 train_dict["continue_training_epoch"] = 0
 train_dict["flip"] = False
 
-train_dict["folder_club"] = [
-    "./data/MR_brain_norm/",
-    "./data/CT_brain_norm/",
-    "./data/NAC_wb_norm/",
-    "./data/CT_wb_norm/",
-]
+train_dict["folder_club"] = list("./data/"+modalities+"/" for modalities in train_dict["modality_club"])
 
 train_dict["val_ratio"] = 0.3
 train_dict["test_ratio"] = 0.2
@@ -109,7 +104,20 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = mae_vit_large_patch16(modality_club=train_dict["modality_club"])
 pre_train_dir = train_dict["target_model"]
 ckpt = torch.load(pre_train_dir, map_location='cpu')["model"]
+num_ckpt_patches = (224 // 16) * (224 // 16) + 1
+num_model_patches = (train_dict["input_size"][0] // 16) * (train_dict["input_size"][1] // 16) + 1
+if num_ckpt_patches != num_model_patches:
+    ckpt["pos_embed"] = F.interpolate(ckpt["pos_embed"].unsqueeze(0), size=(num_model_patches, 1024), mode="bilinear", align_corners=False).squeeze(0)
 model.load_state_dict(ckpt, strict=False)
+
+# model_state_dict_keys = list(model.state_dict().keys())
+# for key in list(ckpt.keys()):
+#     if key in model_state_dict_keys:
+#         if ckpt[key].shape != model.state_dict()[key].shape:
+#             print(key, ckpt[key].shape, model.state_dict()[key].shape)
+#             # pos_embed torch.Size([1, 197, 1024]) torch.Size([1, 257, 1024])
+
+
 
 model.train()
 model = model.to(device)
