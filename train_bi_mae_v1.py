@@ -42,6 +42,7 @@ def dataset_division(dataset_list, val_ratio, test_ratio):
 
 model_list = [
     ["MR_PET_mae", [3]],
+    ["MRCT_brain_NACCT_wb_mae", [5]],
 ]
 
 print("Model index: ", end="")
@@ -62,18 +63,24 @@ train_dict["optimizer"] = "AdamW"
 
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["seed"] = 426
-train_dict["input_size"] = [224, 224]
+train_dict["input_size"] = [256, 256]
 train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["PET_norm_factor"] = 4000
 train_dict["target_model"] = "./pre_train/mae_vit_large_patch16.pth"
+train_dict["modality_club"] = ["MR_brain_norm", "CT_brain_norm", "NAC_wb_norm", "CT_wb_norm"]
 
 train_dict["model_term"] = "two-branch mae"
 train_dict["continue_training_epoch"] = 0
 train_dict["flip"] = False
 
-train_dict["folder_MR"] = "./data/MR/"
-train_dict["folder_PET"] = "./data/PET/"
+train_dict["folder_club"] = [
+    "./data/MR_brain_norm/",
+    "./data/CT_brain_norm/",
+    "./data/NAC_wb_norm/",
+    "./data/CT_wb_norm/",
+]
+
 train_dict["val_ratio"] = 0.3
 train_dict["test_ratio"] = 0.2
 
@@ -99,7 +106,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # ==================== model ====================
 
-model = mae_vit_large_patch16()
+model = mae_vit_large_patch16(modality_club=train_dict["modality_club"])
 pre_train_dir = train_dict["target_model"]
 ckpt = torch.load(pre_train_dir, map_location='cpu')["model"]
 model.load_state_dict(ckpt, strict=False)
@@ -120,27 +127,29 @@ optim = torch.optim.AdamW(
 
 # ==================== data division ====================
 
-MR_list = glob.glob(train_dict["folder_MR"]+"*.nii.gz")
-PET_list = glob.glob(train_dict["folder_PET"]+"*.nii.gz")
+modality_list = [sorted(glob.glob(path+"*.nii.gz")) for path in train_dict["folder_club"]]
 
-MR_train_list, MR_val_list, MR_test_list = dataset_division(
-    MR_list, 
-    train_dict["val_ratio"], 
-    train_dict["test_ratio"],
-)
+train_club = []
+val_club = []
+test_club = []
 
-PET_train_list, PET_val_list, PET_test_list = dataset_division(
-    PET_list, 
-    train_dict["val_ratio"], 
-    train_dict["test_ratio"],
-)
+for modalities in modality_list:
+    train_list, val_list, test_list = dataset_division(
+        modalities, 
+        train_dict["val_ratio"], 
+        train_dict["test_ratio"],
+    )
+    train_club = train_club+train_list
+    val_club = val_club+val_list
+    test_club = test_club+test_list
+
 data_division_dict = {
-    "MR_train_list": MR_train_list,
-    "MR_val_list": MR_val_list,
-    "MR_test_list": MR_test_list,
-    "PET_train_list": PET_train_list,
-    "PET_val_list": PET_val_list,
-    "PET_test_list": PET_test_list,
+    "train_club": train_club,
+    "val_club": val_club,
+    "test_club": test_club,
+    "modality_club": train_dict["modality_club"],
+    "modality_list": modality_list,
+    "time_stamp": train_dict["time_stamp"],
 }
 np.save(train_dict["save_folder"]+"data_division.npy", data_division_dict)
 
@@ -149,8 +158,8 @@ np.save(train_dict["save_folder"]+"data_division.npy", data_division_dict)
 best_val_loss = 1e3
 best_epoch = 0
 
-package_train = [[MR_train_list, PET_train_list], True, False, "train"]
-package_val = [[MR_test_list, PET_test_list], False, True, "val"]
+package_train = [ train_club, True, False, "train"]
+package_val = [ val_club, False, True, "val"]
 # package_test = [test_list, False, False, "test"]
 
 for idx_epoch_new in range(train_dict["epochs"]):
@@ -159,9 +168,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
 
     for package in [package_train, package_val]:
 
-        MR_list, PET_list = package[0]
-        PET_factor = int(len(MR_list) / len(PET_list))
-        file_list = MR_list + PET_list*PET_factor*2
+        file_list = package[0]
         np.random.shuffle(file_list)
         isTrain = package[1]
         isVal = package[2]
@@ -180,10 +187,15 @@ for idx_epoch_new in range(train_dict["epochs"]):
             
             x_path = file_path
             curr_modality = None
-            if "MR" in file_path:
-                curr_modality = "MR"
-            if "PET" in file_path:
-                curr_modality = "PET"
+            if "MR_brain_norm" in file_path:
+                curr_modality = "MR_brain_norm"
+            if "CT_brain_norm" in file_path:
+                curr_modality = "CT_brain_norm"
+            if "NAC_wb_norm" in file_path:
+                curr_modality = "NAC_wb_norm"
+            if "CT_wb_norm" in file_path:
+                curr_modality = "CT_wb_norm"
+
             file_name = os.path.basename(file_path)
             print(iter_tag + " ===> Epoch[{:03d}]-[{:03d}]/[{:03d}]: --->".format(
                 idx_epoch+1, cnt_file+1, len(file_list)), x_path, "<---", end="")
