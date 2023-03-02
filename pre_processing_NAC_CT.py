@@ -3,8 +3,8 @@ import numpy as np
 import os
 import glob
 
-NAC_list = sorted(glob.glob("./data/PET_256_MAX_MIN_2_Not_Normalized/*.nii.gz"))
-CT_list = sorted(glob.glob("./data/CT_256_MAX_MIN_2_Not_Normalized/*.nii.gz"))
+NAC_list = sorted(glob.glob("./data/Iman/PET_256_MAX_MIN_2_Not_Normalized/*.nii.gz"))
+CT_list = sorted(glob.glob("./data/Iman/CT_256_MAX_MIN_2_Not_Normalized/*.nii.gz"))
 
 for folder_path in ["./data/NAC_wb_norm/", "./data/CT_wb_norm/"]:
     if not os.path.exists(folder_path):
