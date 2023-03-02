@@ -67,7 +67,7 @@ train_dict["input_size"] = [256, 256]
 train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["PET_norm_factor"] = 4000
-train_dict["target_model"] = "./pre_train/mae_vit_large_patch16.pth"
+train_dict["target_model"] = "./pre_train/mae_vit_large.pth"
 train_dict["modality_club"] = ["MR_brain_norm", "CT_brain_norm", "NAC_wb_norm", "CT_wb_norm"]
 
 train_dict["model_term"] = "two-branch mae"
