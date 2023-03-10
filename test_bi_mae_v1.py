@@ -80,9 +80,9 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 ckpt_list = sorted(glob.glob(train_dict["save_folder"]+"model_best_*.pth"))
 if len(ckpt_list) > 0:
-    ckpt = torch.load(ckpt_list[-1], map_location='cpu')["model"]
-model = mae_vit_large_patch16(modality_club=train_dict["modality_club"])
-model.load_state_dict(ckpt, strict=False)
+    model = torch.load(ckpt_list[-1], map_location='cpu')["model"]
+# model = mae_vit_large_patch16(modality_club=train_dict["modality_club"])
+# model.load_state_dict(ckpt, strict=False)
 
 model.eval()
 model = model.to(device)
