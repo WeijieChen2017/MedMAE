@@ -147,6 +147,8 @@ for cnt_file, file_path in enumerate(file_list):
         batch_x = torch.from_numpy(batch_x).float().to(device)
         with torch.no_grad():
             loss, pred, mask = model(batch_x, curr_modality)
+        final_pred = pred.detach().cpu().numpy()
+        print(final_pred.shape)
         recon_x[:, :, idx_z] = np.squeeze(pred[0, 1, :, :].cpu().numpy())
         
     recon_x = np.resize(recon_x, x_data.shape)
