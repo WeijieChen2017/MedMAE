@@ -66,7 +66,6 @@ train_dict["seed"] = 426
 train_dict["input_size"] = [256, 256]
 train_dict["epochs"] = 200
 train_dict["batch"] = 64
-train_dict["PET_norm_factor"] = 4000
 train_dict["target_model"] = "./pre_train/mae_pretrain_vit_large.pth"
 train_dict["modality_club"] = ["MR_brain_norm", "CT_brain_norm", "NAC_wb_norm", "CT_wb_norm"]
 
@@ -207,9 +206,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 idx_epoch+1, cnt_file+1, len(file_list)), x_path, "<---", end="")
             x_file = nib.load(x_path)
             x_data = x_file.get_fdata()
-
-            if curr_modality == "PET":
-                x_data = x_data / train_dict["PET_norm_factor"]
+            
             x_data = np.resize(x_data, (train_dict["input_size"][0], train_dict["input_size"][1], x_data.shape[2]))
 
             batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
