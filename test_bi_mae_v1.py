@@ -127,7 +127,7 @@ for cnt_file, file_path in enumerate(file_list):
     #     x_data = x_data / train_dict["PET_norm_factor"]
     x_data = np.resize(x_data, (train_dict["input_size"][0], train_dict["input_size"][1], x_data.shape[2]))
 
-    batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
+    batch_x = np.zeros((1, 3, train_dict["input_size"][0], train_dict["input_size"][1]))
     recon_x = np.zeros((x_data.shape))
     len_z = x_data.shape[2]
     for idx_z in range(len_z):
@@ -150,7 +150,7 @@ for cnt_file, file_path in enumerate(file_list):
         y = model.unpatchify(y)
         y = torch.einsum('nchw->nhwc', y).detach().cpu()
         print(y.shape)
-        recon_x[:, :, idx_z] = np.squeeze(y[:, :, 1])
+        recon_x[:, :, idx_z] = np.squeeze(y[0, :, :, 1])
         
     recon_x = np.resize(recon_x, x_data.shape)
     recon_file = nib.Nifti1Image(recon_x, x_file.affine, x_file.header)
