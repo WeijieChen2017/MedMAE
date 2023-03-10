@@ -127,10 +127,10 @@ for cnt_file, file_path in enumerate(file_list):
     #     x_data = x_data / train_dict["PET_norm_factor"]
     x_data = np.resize(x_data, (train_dict["input_size"][0], train_dict["input_size"][1], x_data.shape[2]))
 
-    batch_x = np.zeros((1, 3, train_dict["input_size"][0], train_dict["input_size"][1]))
     recon_x = np.zeros((x_data.shape))
     len_z = x_data.shape[2]
     for idx_z in range(len_z):
+        batch_x = np.zeros((1, 3, train_dict["input_size"][0], train_dict["input_size"][1]))
         if idx_z == 0:
             batch_x[:, 0, :, :] = x_data[:, :, idx_z]
             batch_x[:, 1, :, :] = x_data[:, :, idx_z]
@@ -149,7 +149,7 @@ for cnt_file, file_path in enumerate(file_list):
             loss, y, mask = model(batch_x, curr_modality)
         y = model.unpatchify(y)
         y = torch.einsum('nchw->nhwc', y).detach().cpu()
-        print(y.shape)
+        # print(y.shape)
         recon_x[:, :, idx_z] = np.squeeze(y[0, :, :, 1])
         
     recon_x = np.resize(recon_x, x_data.shape)
