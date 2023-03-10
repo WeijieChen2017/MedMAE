@@ -149,7 +149,7 @@ for cnt_file, file_path in enumerate(file_list):
             loss, y, mask = model(batch_x, curr_modality)
         y = model.unpatchify(y)
         y = torch.einsum('nchw->nhwc', y).detach().cpu()
-        recon_x[:, :, idx_z] = np.squeeze(y[0, 1, :, :])
+        recon_x[:, :, idx_z] = np.squeeze(y[:, :, 1])
         
     recon_x = np.resize(recon_x, x_data.shape)
     recon_file = nib.Nifti1Image(recon_x, x_file.affine, x_file.header)
