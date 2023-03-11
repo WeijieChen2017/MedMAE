@@ -43,6 +43,8 @@ def dataset_division(dataset_list, val_ratio, test_ratio):
 model_list = [
     ["MR_PET_mae", [3]],
     ["MRCT_brain_NACCT_wb_mae", [5]],
+    ["MRCT_brain_NACCT_wb_mae_updated", [5]],
+    
 ]
 
 print("Model index: ", end="")
@@ -206,7 +208,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 idx_epoch+1, cnt_file+1, len(file_list)), x_path, "<---", end="")
             x_file = nib.load(x_path)
             x_data = x_file.get_fdata()
-            
+
             x_data = np.resize(x_data, (train_dict["input_size"][0], train_dict["input_size"][1], x_data.shape[2]))
 
             batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
