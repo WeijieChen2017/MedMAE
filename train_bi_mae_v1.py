@@ -224,14 +224,22 @@ for idx_epoch_new in range(train_dict["epochs"]):
             for idx_batch in range(train_dict["batch"]):
                 
                 # z_offset = np.random.randint(x_data.shape[2]-2)
-                z_offset = np.random.choice(x_data.shape[2]-2, p=batch_prob)
-                batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset]
-                batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset+1]
-                batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+2]
-                batch_y = copy.deepcopy(batch_x)
-
+                z_offset = np.random.choice(x_data.shape[2], p=batch_prob)
+                if z_offset == 0:
+                    batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset]
+                    batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
+                    batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+1]
+                elif z_offset == x_data.shape[2]:
+                    batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset-1]
+                    batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
+                    batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset]
+                else:
+                    batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset-1]
+                    batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
+                    batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+1]
+            # batch_y = copy.deepcopy(batch_x)
             batch_x = torch.from_numpy(batch_x).float().to(device)
-            batch_y = torch.from_numpy(batch_y).float().to(device)
+            batch_y = torch.from_numpy(batch_x).float().to(device)
             
             if isTrain:
 
