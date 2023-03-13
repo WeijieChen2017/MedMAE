@@ -41,10 +41,10 @@ def dataset_division(dataset_list, val_ratio, test_ratio):
 # ==================== model select ====================
 
 model_list = [
-    ["MR_PET_mae", [3]],
-    ["MRCT_brain_NACCT_wb_mae", [5]],
-    ["MRCT_brain_NACCT_wb_mae_updated", [5]],
-    
+    ["MR_PET_mae", [3], "l2"],
+    ["MRCT_brain_NACCT_wb_mae", [5], "l2"],
+    ["MRCT_brain_NACCT_wb_mae_updated", [5], "l2"],
+    ["MRCT_brain_NACCT_wb_mae_L1", [5], "l1"],
 ]
 
 print("Model index: ", end="")
@@ -58,9 +58,10 @@ train_dict = {}
 train_dict["time_stamp"] = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 train_dict["project_name"] = model_list[current_model_idx][0]
 train_dict["gpu_ids"] = model_list[current_model_idx][1]
+train_dict["loss_term"] = model_list[current_model_idx][2]
 
-train_dict["dropout"] = 0.
-train_dict["loss_term"] = "SmoothL1Loss"
+# train_dict["dropout"] = 0.
+# train_dict["loss_term"] = "SmoothL1Loss"
 train_dict["optimizer"] = "AdamW"
 
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
@@ -102,7 +103,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # ==================== model ====================
 
-model = mae_vit_large_patch16(modality_club=train_dict["modality_club"])
+model = mae_vit_large_patch16(modality_club=train_dict["modality_club"], loss_type=train_dict["loss_term"])
 pre_train_dir = train_dict["target_model"]
 ckpt = torch.load(pre_train_dir, map_location='cpu')["model"]
 num_ckpt_patches = (224 // 16) * (224 // 16) + 1
@@ -186,7 +187,11 @@ for idx_epoch_new in range(train_dict["epochs"]):
         else:
             model.eval()
         
-        case_loss = np.zeros((len(file_list), 1))
+        case_loss = dict()
+        case_loss["MR_brain_norm"] = []
+        case_loss["CT_brain_norm"] = []
+        case_loss["NAC_wb_norm"] = []
+        case_loss["CT_wb_norm"] = []
 
         # N, C, D, H, W
 
@@ -230,20 +235,21 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 loss, pred, mask = model(batch_x, curr_modality)
                 loss.backward()
                 optim.step()
-                case_loss[cnt_file, 0] = loss.item()
-                print("Loss: ", np.mean(case_loss[cnt_file, :]))
+                case_loss[curr_modality].append(loss.item())
+                print("Loss: ", curr_modality, loss.item())
 
             if isVal:
 
                 with torch.no_grad():
                     loss, pred, mask = model(batch_x, curr_modality)
 
-                case_loss[cnt_file, 0] = loss.item()
-                print("Loss: ", np.mean(case_loss[cnt_file, :]))
+                case_loss[curr_modality].append(loss.item())
+                print("Loss: ", curr_modality, loss.item())
 
         epoch_loss = np.mean(case_loss)
         print(iter_tag + " ===>===> Epoch[{:03d}]: ".format(idx_epoch+1), end='')
-        print("Loss: ", epoch_loss)
+        for curr_modality in case_loss.keys():
+            print(curr_modality, np.mean(case_loss[curr_modality]), end=' ')
         np.save(train_dict["save_folder"]+"loss/epoch_loss_"+iter_tag+"_{:03d}.npy".format(idx_epoch+1), case_loss)
 
         if isVal:

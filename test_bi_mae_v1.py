@@ -149,7 +149,21 @@ for cnt_file, file_path in enumerate(file_list):
             loss, y, mask = model(batch_x, curr_modality)
         y = model.unpatchify(y)
         y = torch.einsum('nchw->nhwc', y).detach().cpu()
-        # print(y.shape)
+        
+        # visualize the mask
+        mask = mask.detach()
+        mask = mask.unsqueeze(-1).repeat(1, 1, model.patch_embed.patch_size[0]**2 *3)  # (N, H*W, p*p*3)
+        mask = model.unpatchify(mask)  # 1 is removing, 0 is keeping
+        mask = torch.einsum('nchw->nhwc', mask).detach().cpu()
+        
+        x = torch.einsum('nchw->nhwc', x)
+
+        # masked image
+        im_masked = x * (1 - mask)
+
+        # MAE reconstruction pasted with visible patches
+        im_paste = x * (1 - mask) + y * mask
+
         recon_x[:, :, idx_z] = np.squeeze(y[0, :, :, 1])
         
     recon_x = np.resize(recon_x, x_data.shape)
