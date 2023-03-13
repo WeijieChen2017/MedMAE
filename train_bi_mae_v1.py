@@ -229,7 +229,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                     batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset]
                     batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
                     batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+1]
-                elif z_offset == x_data.shape[2]:
+                elif z_offset == x_data.shape[2]-1:
                     batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset-1]
                     batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
                     batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset]
