@@ -218,9 +218,13 @@ for idx_epoch_new in range(train_dict["epochs"]):
 
             batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
 
+            batch_prob = np.mean(x_data, axis=(0, 1))
+            batch_prob = batch_prob / np.sum(batch_prob)
+
             for idx_batch in range(train_dict["batch"]):
                 
-                z_offset = np.random.randint(x_data.shape[2]-2)
+                # z_offset = np.random.randint(x_data.shape[2]-2)
+                z_offset = np.random.choice(x_data.shape[2]-2, p=batch_prob)
                 batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset]
                 batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset+1]
                 batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+2]
