@@ -238,8 +238,9 @@ for idx_epoch_new in range(train_dict["epochs"]):
                     batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
                     batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+1]
             # batch_y = copy.deepcopy(batch_x)
-            batch_x = torch.from_numpy(batch_x).float().to(device)
             batch_y = torch.from_numpy(batch_x).float().to(device)
+            batch_x = torch.from_numpy(batch_x).float().to(device)
+            
             
             if isTrain:
 
@@ -275,7 +276,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 torch.save(optim, train_dict["save_folder"]+"optim_{:03d}.pth".format(idx_epoch + 1))
                 print("Checkpoint saved at Epoch {:03d}".format(idx_epoch + 1))
                 best_val_loss = epoch_loss
-
-        # del batch_x, batch_y
-        # gc.collect()
-        # torch.cuda.empty_cache()
+        
+        del batch_x, batch_y
+        gc.collect()
+        torch.cuda.empty_cache()
