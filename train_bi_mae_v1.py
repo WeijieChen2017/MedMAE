@@ -4,8 +4,9 @@ from models import mae_vit_huge_patch14
 from utils import dataset_division
 
 import os
+import gc
 import glob
-import copy
+# import copy
 import time
 import torch
 import numpy as np
@@ -259,11 +260,15 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 case_loss[curr_modality].append(loss.item())
                 print("Loss: ", curr_modality, loss.item())
 
-        epoch_loss = np.mean(case_loss)
+        epoch_loss = []
         print(iter_tag + " ===>===> Epoch[{:03d}]: ".format(idx_epoch+1), end='')
         for curr_modality in case_loss.keys():
-            print(curr_modality, np.mean(case_loss[curr_modality]), end=' ')
+            curr_loss = np.mean(case_loss[curr_modality])
+            epoch_loss.append(curr_loss)
+            print(curr_modality, curr_loss, end=' ')
+        print()
         np.save(train_dict["save_folder"]+"loss/epoch_loss_"+iter_tag+"_{:03d}.npy".format(idx_epoch+1), case_loss)
+        epoch_loss = np.mean(epoch_loss)
 
         if isVal:
             # np.save(train_dict["save_folder"]+"npy/Epoch[{:03d}]_Case[{}]_".format(idx_epoch+1, file_name)+iter_tag+"_xf.npy", batch_xf.cpu().detach().numpy())
