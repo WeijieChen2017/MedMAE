@@ -97,6 +97,7 @@ if train_dict["model_term"] == "cont":
         for modalities in train_dict["modality_club"]:
             if modalities in ckpt_key:
                 ckpt_state_dict.pop(ckpt_key, None)
+                print(ckpt_key)
 
     model.load_state_dict(ckpt_state_dict, strict=False)
 elif train_dict["model_term"] == "base":
