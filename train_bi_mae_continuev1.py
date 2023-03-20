@@ -180,7 +180,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
 
             file_name = os.path.basename(file_path)
             print(iter_tag + " ===> Epoch[{:03d}]-[{:03d}]/[{:03d}]: --->".format(
-                idx_epoch+1, cnt_file+1, len(file_list)), x_path, "<---", end="")
+                idx_epoch+1, cnt_file+1, len(curr_modality_file_list)), x_path, "<---", end="")
             x_file = nib.load(x_path)
             y_file = nib.load(x_path.replace(curr_modality, train_dict["modality_club"][1]))
             x_data = x_file.get_fdata()
