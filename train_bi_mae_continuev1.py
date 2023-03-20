@@ -87,7 +87,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # ==================== model ====================
 
-model = mae_vit_large_patch16_cont(modality_club=train_dict["modality_club"][0], loss_type=train_dict["loss_term"])
+model = mae_vit_large_patch16_cont(modality_club=[train_dict["modality_club"][0]], loss_type=train_dict["loss_term"])
 if train_dict["model_term"] == "cont":
     pre_train_dir = train_dict["pretrained_model"]
     ckpt = torch.load(pre_train_dir, map_location='cpu')
