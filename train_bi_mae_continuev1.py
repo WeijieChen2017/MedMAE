@@ -222,7 +222,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             if isTrain:
 
                 optim.zero_grad()
-                loss, pred = model(
+                loss, pred, mask = model(
                     imgs=batch_x, 
                     trgs=batch_y,
                     modality=curr_modality,
@@ -236,7 +236,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             if isVal:
 
                 with torch.no_grad():
-                    loss, pred = model(
+                    loss, pred, mask = model(
                         imgs=batch_x, 
                         trgs=batch_y,
                         modality=curr_modality,
