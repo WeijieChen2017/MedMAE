@@ -19,8 +19,8 @@ import torch.nn.functional as F
 model_list = [
     ["MRCT_brain_NACCT_wb_mae_base_MRCT_L1", [5], "l1", "base", "MRCT"],
     ["MRCT_brain_NACCT_wb_mae_cont_MRCT_L1", [5], "l1", "cont", "MRCT"],
-    ["MRCT_brain_NACCT_wb_mae_base_NACCT_L1", [5], "l1", "base", "NACCT"],
-    ["MRCT_brain_NACCT_wb_mae_cont_NACCT_L1", [5], "l1", "cont", "NACCT"],
+    ["MRCT_brain_NACCT_wb_mae_base_NACCT_L1", [0], "l1", "base", "NACCT"],
+    ["MRCT_brain_NACCT_wb_mae_cont_NACCT_L1", [0], "l1", "cont", "NACCT"],
 ]
 
 print("Model index: ", end="")
@@ -92,7 +92,7 @@ if train_dict["model_term"] == "cont":
     pre_train_dir = train_dict["pretrained_model"]
     ckpt = torch.load(pre_train_dir, map_location='cpu')
     ckpt_state_dict = ckpt.state_dict()
-    ckpy_state_dict_key = ckpt_state_dict.keys()
+    ckpy_state_dict_key = list(ckpt_state_dict.keys())
     for ckpt_key in ckpy_state_dict_key:
         for modalities in train_dict["modality_club"]:
             if modalities in ckpt_key:
