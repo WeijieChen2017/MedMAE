@@ -164,9 +164,15 @@ for idx_epoch_new in range(train_dict["epochs"]):
         case_loss = dict()
         case_loss[train_dict["modality_club"][0]] = []
 
+        curr_modality_file_list = []
+        for file_path in file_list:
+            if train_dict["modality_club"][0] in file_path:
+                curr_modality_file_list.append(file_path)
+
+
         # N, C, D, H, W
 
-        for cnt_file, file_path in enumerate(file_list):
+        for cnt_file, file_path in enumerate(curr_modality_file_list):
             
             x_path = file_path
             curr_modality = train_dict["modality_club"][0]
@@ -181,7 +187,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             x_data = np.resize(x_data, (train_dict["input_size"][0], train_dict["input_size"][1], x_data.shape[2]))
             y_data = np.resize(y_data, (train_dict["input_size"][0], train_dict["input_size"][1], y_data.shape[2]))
             batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
-            batch_y = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1]))
+            batch_y = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
             batch_prob = np.mean(x_data, axis=(0, 1))
             batch_prob = batch_prob / np.sum(batch_prob)
 
@@ -194,6 +200,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                     batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
                     batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+1]
                     batch_y[idx_batch, 0, :, :] = y_data[:, :, z_offset]
+                    batch_y[idx_batch, 1, :, :] = y_data[:, :, z_offset]
                     batch_y[idx_batch, 2, :, :] = y_data[:, :, z_offset+1]
                 elif z_offset == x_data.shape[2]-1:
                     batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset-1]
