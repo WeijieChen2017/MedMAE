@@ -148,7 +148,7 @@ for cnt_file, file_path in enumerate(file_list):
         batch_x = torch.from_numpy(batch_x)
         x = torch.einsum('nchw->nhwc', batch_x)
         batch_x = batch_x.float().to(device)
-        
+
         with torch.no_grad():
             loss, y, mask = model(batch_x, curr_modality)
         y = model.unpatchify(y)
@@ -172,7 +172,7 @@ for cnt_file, file_path in enumerate(file_list):
         
     recon_x = np.resize(recon_x, x_data.shape)
     recon_file = nib.Nifti1Image(recon_x, x_file.affine, x_file.header)
-    recon_name = train_dict["save_folder"]+"pred_monai/"+file_name.replace(curr_modality, curr_modality+"_recon")
+    recon_name = train_dict["save_folder"]+"pred_monai/"+curr_modality+"_recon_"+file_name
     nib.save(recon_file, recon_name)
     print(" --->", recon_name, "<---")
 
