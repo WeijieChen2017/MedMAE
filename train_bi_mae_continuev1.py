@@ -45,6 +45,7 @@ train_dict["input_size"] = [256, 256]
 train_dict["epochs"] = 200
 train_dict["batch"] = 16
 
+train_dict["cont_folder"] = "./project_dir/MRCT_brain_NACCT_wb_mae_L1/"
 train_dict["pretrained_model"] = "./project_dir/MRCT_brain_NACCT_wb_mae_L1/model_best_195.pth"
 train_dict["baseline_ckpt"] = "./pre_train/mae_pretrain_vit_large.pth"
 if train_dict["modality_term"] == "MRCT":
@@ -129,31 +130,10 @@ optim = torch.optim.AdamW(
 
 # ==================== data division ====================
 
-modality_list = [sorted(glob.glob(path+"*.nii.gz")) for path in train_dict["folder_club"]]
-
-train_club = []
-val_club = []
-test_club = []
-
-for modalities in modality_list:
-    train_list, val_list, test_list = dataset_division(
-        modalities, 
-        train_dict["val_ratio"], 
-        train_dict["test_ratio"],
-    )
-    train_club = train_club+train_list
-    val_club = val_club+val_list
-    test_club = test_club+test_list
-
-data_division_dict = {
-    "train_club": train_club,
-    "val_club": val_club,
-    "test_club": test_club,
-    "modality_club": train_dict["modality_club"],
-    "modality_list": modality_list,
-    "time_stamp": train_dict["time_stamp"],
-}
-np.save(train_dict["save_folder"]+"data_division.npy", data_division_dict)
+data_division_dict = np.load(train_dict["cont_folder"]+"data_division.npy", allow_pickle=True).item()
+train_club = data_division_dict["train_club"]
+val_club = data_division_dict["val_club"]
+test_club = data_division_dict["test_club"]
 
 # ==================== training ====================
 
