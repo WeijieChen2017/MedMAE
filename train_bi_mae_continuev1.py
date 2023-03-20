@@ -226,6 +226,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                     imgs=batch_x, 
                     trgs=batch_y,
                     modality=curr_modality,
+                    mask_ratio=0.,
                 )
                 loss.backward()
                 optim.step()
@@ -239,6 +240,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                         imgs=batch_x, 
                         trgs=batch_y,
                         modality=curr_modality,
+                        mask_ratio=0.,
                     )
                 case_loss[curr_modality].append(loss.item())
                 print("Loss: ", loss.item())
