@@ -145,9 +145,10 @@ for cnt_file, file_path in enumerate(file_list):
             batch_x[:, 1, :, :] = x_data[:, :, idx_z]
             batch_x[:, 2, :, :] = x_data[:, :, idx_z+1]
 
+        batch_x = torch.from_numpy(batch_x)
         x = torch.einsum('nchw->nhwc', batch_x)
-
-        batch_x = torch.from_numpy(batch_x).float().to(device)
+        batch_x = batch_x.float().to(device)
+        
         with torch.no_grad():
             loss, y, mask = model(batch_x, curr_modality)
         y = model.unpatchify(y)
