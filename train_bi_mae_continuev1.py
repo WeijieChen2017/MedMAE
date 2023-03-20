@@ -181,7 +181,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             x_data = np.resize(x_data, (train_dict["input_size"][0], train_dict["input_size"][1], x_data.shape[2]))
             y_data = np.resize(y_data, (train_dict["input_size"][0], train_dict["input_size"][1], y_data.shape[2]))
             batch_x = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
-            batch_y = np.zeros((train_dict["batch"], 3, train_dict["input_size"][0], train_dict["input_size"][1]))
+            batch_y = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1]))
             batch_prob = np.mean(x_data, axis=(0, 1))
             batch_prob = batch_prob / np.sum(batch_prob)
 
@@ -194,7 +194,6 @@ for idx_epoch_new in range(train_dict["epochs"]):
                     batch_x[idx_batch, 1, :, :] = x_data[:, :, z_offset]
                     batch_x[idx_batch, 2, :, :] = x_data[:, :, z_offset+1]
                     batch_y[idx_batch, 0, :, :] = y_data[:, :, z_offset]
-                    batch_y[idx_batch, 1, :, :] = y_data[:, :, z_offset]
                     batch_y[idx_batch, 2, :, :] = y_data[:, :, z_offset+1]
                 elif z_offset == x_data.shape[2]-1:
                     batch_x[idx_batch, 0, :, :] = x_data[:, :, z_offset-1]
@@ -216,7 +215,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             if isTrain:
 
                 optim.zero_grad()
-                loss, pred, mask = model(
+                loss, pred = model(
                     imgs=batch_x, 
                     trgs=batch_y,
                     modality=curr_modality,
@@ -225,19 +224,19 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 loss.backward()
                 optim.step()
                 case_loss[curr_modality].append(loss.item())
-                print("Loss: ", curr_modality, loss.item())
+                print("Loss: ", loss.item())
 
             if isVal:
 
                 with torch.no_grad():
-                    loss, pred, mask = model(
+                    loss, pred = model(
                         imgs=batch_x, 
                         trgs=batch_y,
                         modality=curr_modality,
                         mask_ratio=0.,
                     )
                 case_loss[curr_modality].append(loss.item())
-                print("Loss: ", curr_modality, loss.item())
+                print("Loss: ", loss.item())
 
         epoch_loss = []
         print(iter_tag + " ===>===> Epoch[{:03d}]: ".format(idx_epoch+1), end='')
