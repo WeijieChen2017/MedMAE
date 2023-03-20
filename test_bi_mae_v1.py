@@ -164,7 +164,7 @@ for cnt_file, file_path in enumerate(file_list):
         # MAE reconstruction pasted with visible patches
         im_paste = x * (1 - mask) + y * mask
 
-        recon_x[:, :, idx_z] = np.squeeze(y[0, :, :, 1])
+        recon_x[:, :, idx_z] = np.squeeze(im_paste[0, :, :, 1])
         
     recon_x = np.resize(recon_x, x_data.shape)
     recon_file = nib.Nifti1Image(recon_x, x_file.affine, x_file.header)
