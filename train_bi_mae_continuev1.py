@@ -43,7 +43,7 @@ train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["seed"] = 426
 train_dict["input_size"] = [256, 256]
 train_dict["epochs"] = 200
-train_dict["batch"] = 16
+train_dict["batch"] = 8
 
 train_dict["cont_folder"] = "./project_dir/MRCT_brain_NACCT_wb_mae_L1/"
 train_dict["pretrained_model"] = "./project_dir/MRCT_brain_NACCT_wb_mae_L1/model_best_195.pth"
