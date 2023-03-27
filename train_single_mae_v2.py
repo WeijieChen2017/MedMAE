@@ -42,8 +42,8 @@ def dataset_division(dataset_list, val_ratio, test_ratio):
 # ==================== model select ====================
 
 model_list = [
-    ["MR_mae", [2], "l2", "MR_brain_norm"],
-    ["NAC_mae", [2], "l2", "NAC_wb_norm"],
+    ["brain_mae", [2], "l2", ["MR_brain_norm", "CT_brain_norm"]],
+    ["wb_mae", [2], "l2", ["NAC_wb_norm", "CT_wb_norm"]],
 ]
 
 print("Model index: ", end="")
@@ -72,7 +72,7 @@ train_dict["batch"] = 32
 train_dict["target_model"] = "./pre_train/mae_pretrain_vit_large.pth"
 # train_dict["modality_club"] = ["MR_brain_norm", "CT_brain_norm", "NAC_wb_norm", "CT_wb_norm"]
 
-train_dict["model_term"] = "two-branch mae"
+train_dict["model_term"] = "one-branch mae"
 train_dict["continue_training_epoch"] = 0
 train_dict["flip"] = False
 
@@ -189,6 +189,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
         
         case_loss = dict()
         case_loss[train_dict["modality_club"][0]] = []
+        case_loss[train_dict["modality_club"][1]] = []
         # case_loss["MR_brain_norm"] = []
         # case_loss["CT_brain_norm"] = []
         # case_loss["NAC_wb_norm"] = []
@@ -199,15 +200,15 @@ for idx_epoch_new in range(train_dict["epochs"]):
         for cnt_file, file_path in enumerate(file_list):
             
             x_path = file_path
-            curr_modality = train_dict["modality_club"][0]
-            # if "MR_brain_norm" in file_path:
-            #     curr_modality = "MR_brain_norm"
-            # if "CT_brain_norm" in file_path:
-            #     curr_modality = "CT_brain_norm"
-            # if "NAC_wb_norm" in file_path:
-            #     curr_modality = "NAC_wb_norm"
-            # if "CT_wb_norm" in file_path:
-            #     curr_modality = "CT_wb_norm"
+            curr_modality = None
+            if "MR_brain_norm" in file_path:
+                curr_modality = "MR_brain_norm"
+            if "CT_brain_norm" in file_path:
+                curr_modality = "CT_brain_norm"
+            if "NAC_wb_norm" in file_path:
+                curr_modality = "NAC_wb_norm"
+            if "CT_wb_norm" in file_path:
+                curr_modality = "CT_wb_norm"
 
             file_name = os.path.basename(file_path)
             print(iter_tag + " ===> Epoch[{:03d}]-[{:03d}]/[{:03d}]: --->".format(
