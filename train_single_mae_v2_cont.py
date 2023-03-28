@@ -75,9 +75,9 @@ train_dict["new_mask_ratio"] = model_list[current_model_idx][5]
 # train_dict["batch"] = 32
 # train_dict["target_model"] = "./pre_train/mae_pretrain_vit_large.pth"
 # train_dict["modality_club"] = ["MR_brain_norm", "CT_brain_norm", "NAC_wb_norm", "CT_wb_norm"]
-# train_dict["continue_model"] = train_dict["save_folder"]+"model_best_{:03d}.pth".format(str(train_dict["continue_epoch"]))
-# train_dict["continue_optim"] = train_dict["save_folder"]+"optim_{:03d}.pth".format(str(train_dict["continue_epoch"]))
-# train_dict["continue_division"] = train_dict["save_folder"]+"data_division.npy"
+train_dict["continue_model"] = train_dict["save_folder"]+"model_best_{:03d}.pth".format(str(train_dict["continue_epoch"]))
+train_dict["continue_optim"] = train_dict["save_folder"]+"optim_{:03d}.pth".format(str(train_dict["continue_epoch"]))
+train_dict["continue_division"] = train_dict["save_folder"]+"data_division.npy"
 
 # train_dict["model_term"] = "one-branch mae"
 train_dict["continue_training_epoch"] = train_dict["continue_epoch"]
@@ -126,7 +126,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #             print(key, ckpt[key].shape, model.state_dict()[key].shape)
 #             # pos_embed torch.Size([1, 197, 1024]) torch.Size([1, 257, 1024])
 
-model = torch.load(train_dict["target_model"], map_location='cpu')
+model = torch.load(train_dict["continue_model"], map_location='cpu')
+# model = torch.load(ckpt_list[-1], map_location='cpu')
 
 model.train()
 model = model.to(device)
