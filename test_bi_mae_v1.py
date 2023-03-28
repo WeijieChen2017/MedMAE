@@ -16,9 +16,10 @@ import torch.nn.functional as F
 # ==================== model select ====================
 
 model_list = [
-    ["MR_PET_mae", [3]],
-    ["MRCT_brain_NACCT_wb_mae", [5]],
-    ["MRCT_brain_NACCT_wb_mae_L1", [5], "l1"],
+    # ["MR_PET_mae", [3]],
+    # ["MRCT_brain_NACCT_wb_mae", [5]],
+    # ["MRCT_brain_NACCT_wb_mae_L1", [5], "l1"],
+    ["brain_mae", [5], "l2"],
 ]
 
 print("Model index: ", end="")
