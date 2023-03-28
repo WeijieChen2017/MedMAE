@@ -31,6 +31,9 @@ time.sleep(1)
 
 train_dict = np.load("./project_dir/"+model_list[current_model_idx][0]+"/"+"setting.npy", allow_pickle=True).item()
 
+train_dict["gpu_ids"] = model_list[current_model_idx][1]
+train_dict["loss_term"] = model_list[current_model_idx][2]
+
 # train_dict = {}
 # train_dict["time_stamp"] = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 # train_dict["project_name"] = model_list[current_model_idx][0]

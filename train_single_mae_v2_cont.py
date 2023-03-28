@@ -53,8 +53,10 @@ time.sleep(1)
 
 # ==================== basic ====================
 
-train_dict = {}
-train_dict["time_stamp"] = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
+train_dict = np.load("./project_dir/"+model_list[current_model_idx][0]+"/"+"setting.npy", allow_pickle=True).item()
+
+# train_dict = {}
+# train_dict["time_stamp"] = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 train_dict["project_name"] = model_list[current_model_idx][0]
 train_dict["gpu_ids"] = model_list[current_model_idx][1]
 train_dict["loss_term"] = model_list[current_model_idx][2]
@@ -64,33 +66,33 @@ train_dict["new_mask_ratio"] = model_list[current_model_idx][5]
 
 # train_dict["dropout"] = 0.
 # train_dict["loss_term"] = "SmoothL1Loss"
-train_dict["optimizer"] = "AdamW"
+# train_dict["optimizer"] = "AdamW"
 
-train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
-train_dict["seed"] = 426
-train_dict["input_size"] = [256, 256]
-train_dict["epochs"] = 200
-train_dict["batch"] = 32
-train_dict["target_model"] = "./pre_train/mae_pretrain_vit_large.pth"
+# train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
+# train_dict["seed"] = 426
+# train_dict["input_size"] = [256, 256]
+# train_dict["epochs"] = 200
+# train_dict["batch"] = 32
+# train_dict["target_model"] = "./pre_train/mae_pretrain_vit_large.pth"
 # train_dict["modality_club"] = ["MR_brain_norm", "CT_brain_norm", "NAC_wb_norm", "CT_wb_norm"]
-train_dict["continue_model"] = train_dict["save_folder"]+"model_best_{:03d}.pth".format(str(train_dict["continue_epoch"]))
-train_dict["continue_optim"] = train_dict["save_folder"]+"optim_{:03d}.pth".format(str(train_dict["continue_epoch"]))
-train_dict["continue_division"] = train_dict["save_folder"]+"data_division.npy"
+# train_dict["continue_model"] = train_dict["save_folder"]+"model_best_{:03d}.pth".format(str(train_dict["continue_epoch"]))
+# train_dict["continue_optim"] = train_dict["save_folder"]+"optim_{:03d}.pth".format(str(train_dict["continue_epoch"]))
+# train_dict["continue_division"] = train_dict["save_folder"]+"data_division.npy"
 
-train_dict["model_term"] = "one-branch mae"
-train_dict["continue_training_epoch"] = 0
-train_dict["flip"] = False
+# train_dict["model_term"] = "one-branch mae"
+train_dict["continue_training_epoch"] = train_dict["continue_epoch"]
+# train_dict["flip"] = False
 
-train_dict["folder_club"] = list("./data/"+modalities+"/" for modalities in train_dict["modality_club"])
+# train_dict["folder_club"] = list("./data/"+modalities+"/" for modalities in train_dict["modality_club"])
 
-train_dict["val_ratio"] = 0.3
-train_dict["test_ratio"] = 0.2
+# train_dict["val_ratio"] = 0.3
+# train_dict["test_ratio"] = 0.2
 
-train_dict["opt_lr"] = 1e-3 # default
-train_dict["opt_betas"] = (0.9, 0.999) # default
-train_dict["opt_eps"] = 1e-8 # default
-train_dict["opt_weight_decay"] = 0.01 # default
-train_dict["amsgrad"] = False # default
+# train_dict["opt_lr"] = 1e-3 # default
+# train_dict["opt_betas"] = (0.9, 0.999) # default
+# train_dict["opt_eps"] = 1e-8 # default
+# train_dict["opt_weight_decay"] = 0.01 # default
+# train_dict["amsgrad"] = False # default
 
 for path in [train_dict["save_folder"], train_dict["save_folder"]+"npy/", train_dict["save_folder"]+"loss/"]:
     if not os.path.exists(path):
@@ -267,7 +269,11 @@ for idx_epoch_new in range(train_dict["epochs"]):
             if isTrain:
 
                 optim.zero_grad()
-                loss, pred, mask = model(batch_x, curr_modality)
+                loss, pred, mask = model(
+                    imgs = batch_x,
+                    modality = curr_modality,
+                    mask_ratio=train_dict["mask_ratio"],
+                )
                 loss.backward()
                 optim.step()
                 case_loss[curr_modality].append(loss.item())
@@ -276,8 +282,11 @@ for idx_epoch_new in range(train_dict["epochs"]):
             if isVal:
 
                 with torch.no_grad():
-                    loss, pred, mask = model(batch_x, curr_modality)
-
+                    loss, pred, mask = model(                    
+                        imgs = batch_x,
+                        modality = curr_modality,
+                        mask_ratio=train_dict["mask_ratio"],
+                    )
                 case_loss[curr_modality].append(loss.item())
                 print("Loss: ", curr_modality, loss.item())
 
