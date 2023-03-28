@@ -273,7 +273,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 loss, pred, mask = model(
                     imgs = batch_x,
                     modality = curr_modality,
-                    mask_ratio=train_dict["mask_ratio"],
+                    mask_ratio=train_dict["new_mask_ratio"],
                 )
                 loss.backward()
                 optim.step()
@@ -286,7 +286,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
                     loss, pred, mask = model(                    
                         imgs = batch_x,
                         modality = curr_modality,
-                        mask_ratio=train_dict["mask_ratio"],
+                        mask_ratio=train_dict["new_mask_ratio"],
                     )
                 case_loss[curr_modality].append(loss.item())
                 print("Loss: ", curr_modality, loss.item())
