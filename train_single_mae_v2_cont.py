@@ -43,7 +43,7 @@ def dataset_division(dataset_list, val_ratio, test_ratio):
 
 model_list = [
     ["brain_mae", [2], "l2", ["MR_brain_norm", "CT_brain_norm"], 102, 0.5],
-    ["wb_mae", [2], "l2", ["NAC_wb_norm", "CT_wb_norm"], 33, 0.5],
+    ["wb_mae", [5], "l2", ["NAC_wb_norm", "CT_wb_norm"], 33, 0.5],
 ]
 
 print("Model index: ", end="")
