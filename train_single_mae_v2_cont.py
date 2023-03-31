@@ -47,7 +47,7 @@ model_list = [
     # ["brain_mae", [6], "l2", ["MR_brain_norm", "CT_brain_norm"], 105, 0.25],
     # ["wb_mae", [2], "l2", ["NAC_wb_norm", "CT_wb_norm"], 88, 0.25],
     ["brain_mae", [6], "l2", ["MR_brain_norm", "CT_brain_norm"], 108, 0.],
-    ["wb_mae", [2], "l2", ["NAC_wb_norm", "CT_wb_norm"], 92, 0.],
+    ["wb_mae", [0], "l2", ["NAC_wb_norm", "CT_wb_norm"], 92, 0.],
 ]
 
 print("Model index: ", end="")
